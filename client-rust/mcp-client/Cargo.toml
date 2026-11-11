@@ -1,0 +1,21 @@
+[package]
+name = "mcp-client"
+description = "Rust MCP client that talks to the .NET semantic search server over STDIO"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+name = "mcp_client"
+path = "src/lib.rs"
+
+[[bin]]
+name = "mcp-cli"
+path = "src/bin/mcp-cli.rs"
+
+[dependencies]
+rmcp.workspace = true
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true

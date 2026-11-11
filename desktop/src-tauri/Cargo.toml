@@ -1,0 +1,22 @@
+[package]
+name = "spil-labs-desktop"
+version = "1.0.0"
+description = "SPIL Labs Assistant desktop app"
+edition = "2021"
+license = "MIT"
+
+# Kept out of the server's Rust workspace on purpose: building the desktop app needs
+# the desktop toolchain (WebView2 on Windows), the server does not.
+[workspace]
+
+[build-dependencies]
+tauri-build = { version = "2.7", features = [] }
+
+[dependencies]
+tauri = { version = "2.12", features = [] }
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = "s"
+strip = true

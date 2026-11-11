@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SPIL Labs Assistant</title>
+  <link rel="stylesheet" href="connect.css" />
+</head>
+<body>
+  <main class="card">
+    <img class="logo" src="spil-labs-logo.png" alt="SPIL Labs" />
+    <h1>Connect to your SPIL Labs server</h1>
+    <p class="hint">Ask your administrator for the address, for example <code>http://192.168.1.25:8000</code>.</p>
+    <form id="form" autocomplete="off">
+      <label for="url">Server address</label>
+      <input id="url" type="text" placeholder="http://server-name:8000" spellcheck="false" required />
+      <button id="go" type="submit">Connect</button>
+    </form>
+    <p id="msg" class="msg" role="status"></p>
+    <p class="foot">You can change the server later from the menu: Server &rsaquo; Change server…</p>
+  </main>
+  <script src="connect.js"></script>
+</body>
+</html>

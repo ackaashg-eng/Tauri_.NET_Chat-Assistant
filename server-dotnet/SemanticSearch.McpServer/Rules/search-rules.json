@@ -1,0 +1,280 @@
+{
+  // ===========================================================================
+  //  Regex rules for "semantic" search - no AI model, no vectors.
+  //
+  //  concepts : a MEANING, recognised by any of its regex patterns. The question
+  //             and every database row are tagged with the concepts they contain,
+  //             so "never showed up" and "has not arrived" both become
+  //             "Delivery problem" even though they share no words.
+  //  synonyms : words that should count as the same word ("package" = "parcel").
+  //  stopWords: words ignored when comparing words ("the", "my", ...).
+  //  stemming : regex rules that cut word endings ("charging" -> "charg").
+  //
+  //  Patterns run on lower-cased text. In JSON every backslash is doubled: \\b
+  //  After editing, press "Update index" on the Admin page (no restart needed).
+  // ===========================================================================
+
+  "concepts": [
+    { "name": "delivery_problem", "label": "Delivery problem", "patterns": [
+      "\\b(parcel|package|order|delivery|shipment|item|stuff|it)s?\\b[^.]{0,20}\\b(never|not|hasn'?t|haven'?t|didn'?t|still not|yet to)\\b[^.]{0,15}\\b(arriv\\w*|come|came|deliver\\w*|show(ed|n)? up|turn(ed)? up|here)\\b",
+      "\\b(never|not|didn'?t|haven'?t)\\b[^.]{0,15}\\b(receiv\\w*|got|get)\\b[^.]{0,15}\\b(parcel|package|order|delivery|item)s?\\b",
+      "\\b(late|delay\\w*|missing|lost|stolen|overdue)\\b[^.]{0,25}\\b(parcel|package|order|delivery|shipment|item)s?\\b",
+      "\\b(parcel|package|order|delivery|shipment)s?\\b[^.]{0,25}\\b(is |was |are )?(late|delay\\w*|missing|lost|overdue)\\b",
+      "\\bwhere('?s| is) my (parcel|package|order|delivery|stuff|item)",
+      "\\b(tracking (link|number|page|info\\w*|has)|track my (parcel|package|order))\\b", "\\bcourier\\b"
+    ]},
+    { "name": "delivery_options", "label": "Delivery options and cost", "patterns": [
+      "\\b(shipping|delivery|postage) (cost|fee|charge|price|option|time)s?\\b",
+      "\\b(free|express|next[- ]day|same[- ]day|standard) (shipping|delivery)\\b",
+      "\\bhow (much|long)\\b[^.?]{0,25}\\b(ship\\w*|deliver\\w*|postage|arrive)",
+      "\\bship(s|ping)? free\\b"
+    ]},
+    { "name": "returns_refunds", "label": "Returns and refunds", "patterns": [
+      "\\brefund\\w*", "\\bmoney back\\b", "(?<!(tax|gst|vat) )\\b(return|send back|send it back|take back|exchange)\\w*\\b"
+    ]},
+    { "name": "change_cancel_order", "label": "Changing or cancelling an order", "patterns": [
+      "(?<!noise[- ])\\bcancel\\w*", "\\b(change|modify|edit|amend)\\b[^.]{0,15}\\border", "\\bchanged my mind\\b"
+    ]},
+    { "name": "warranty", "label": "Warranty and cover", "patterns": [
+      "\\bwarrant(y|ies)\\b", "\\bguarantee\\w*", "\\bprotection plans?\\b", "\\b(extended|insurance|accidental damage)\\b"
+    ]},
+    { "name": "fault_repair", "label": "Broken or faulty device", "patterns": [
+      "\\b(broken|broke|faulty|defect\\w*|malfunction\\w*|cracked|repair\\w*)\\b",
+      "\\b(stopped working|not working|doesn'?t work|does not work|won'?t (turn on|work|start|switch on)|dead)\\b",
+      "\\bstops working\\b"
+    ]},
+    { "name": "screen_problem", "label": "Screen or picture problem", "patterns": [
+      "\\b(no|black|blank|dark) (picture|screen|display|image)\\b",
+      "\\b(screen|display|picture)\\b[^.]{0,20}\\b(black|blank|dark|flicker\\w*|stays off)\\b",
+      "\\bbacklight\\b", "\\bsound but no picture\\b"
+    ]},
+    { "name": "bluetooth", "label": "Bluetooth and pairing", "patterns": [
+      "\\bbluetooth\\b", "\\bpair(ing|ed|s)?\\b", "\\bwon'?t connect\\b",
+      "\\b(earbuds?|headphones?|speakers?)\\b[^.]{0,25}\\bconnect\\w*"
+    ]},
+    { "name": "internet", "label": "Wi-Fi and internet", "patterns": [
+      "\\bwi-?fi\\b", "\\binternet\\b", "\\brouters?\\b", "\\bmesh\\b", "\\bextender\\b", "\\bdead zones?\\b",
+      "\\b(signal|connection)\\b[^.]{0,15}\\b(drop\\w*|weak|slow|bad)\\b", "\\bweak signal\\b"
+    ]},
+    { "name": "battery", "label": "Battery and charging", "patterns": [
+      "\\bbatter(y|ies)\\b", "\\b(re)?charg(e|er|ers|es|ing)\\b", "\\bpower bank\\b",
+      "\\b(dies|died|drains?|drained|draining|runs? out)\\b[^.]{0,15}\\b(fast|quick\\w*|soon)\\b"
+    ]},
+    { "name": "overheating", "label": "Overheating", "patterns": [
+      "\\b(overheat\\w*|too hot|very hot|gets hot|getting hot|warm|burning up)\\b", "\\btemperature warning\\b"
+    ]},
+    { "name": "sign_in", "label": "Password and sign-in", "patterns": [
+      "\\bpasswords?\\b", "\\b(log ?in|login|sign ?in|signing in|locked out|can'?t (get in|access))\\b"
+    ]},
+    { "name": "account_security", "label": "Account security", "patterns": [
+      "\\b(two[- ]factor|2fa|mfa|authenticat\\w*|hack\\w*|security code|backup codes?)\\b"
+    ]},
+    { "name": "address", "label": "Delivery address", "patterns": [
+      "\\baddress(es)?\\b", "\\bmoved house\\b", "\\bwrong (house|street)\\b"
+    ]},
+    { "name": "payment", "label": "Ways to pay", "patterns": [
+      "\\b(payment methods?|credit card|debit card|visa|mastercard|american express|paypal|apple pay|google pay|checkout)\\b",
+      "\\b(how|can i|ways? to) pay\\b"
+    ]},
+    { "name": "instalments", "label": "Paying monthly", "patterns": [
+      "\\binstal?ments?\\b", "\\bmonthly (payments?|plan|parts)\\b", "\\bpay (monthly|in parts|over time|later)\\b",
+      "\\bin (monthly )?parts\\b", "\\bsplit\\b[^.]{0,15}\\b(payment|cost|price)\\b", "\\binterest[- ]free\\b",
+      "\\b(finance|credit check)\\b"
+    ]},
+    { "name": "billing_error", "label": "Billing problem", "patterns": [
+      "\\b(charged|billed|paid)\\b[^.]{0,10}\\b(twice|two times|double|again|too much)\\b",
+      "\\b(double|duplicate) (charge|payment)s?\\b", "\\bauthori[sz]ation hold\\b", "\\bwrong (amount|charge)\\b"
+    ]},
+    { "name": "discounts", "label": "Discounts and deals", "patterns": [
+      "\\b(discounts?|cheaper|price match\\w*|deals?|sale|promo\\w*|coupons?|offers?|percent off|save money)\\b"
+    ]},
+    { "name": "students", "label": "Students", "patterns": [
+      "\\b(students?|universit(y|ies)|college|school|education|campus|dorm\\w*)\\b"
+    ]},
+    { "name": "children", "label": "Children", "patterns": [
+      "\\b(kids?|child|children|teen\\w*|parental|my son|my daughter)\\b"
+    ]},
+    { "name": "travel", "label": "Travel and on the go", "patterns": [
+      "\\b(travel\\w*|trips?|flights?|planes?|airline|aeroplane|airplane|holiday|vacation|commut\\w*|on the go|portable|carry-on|camping|campsite|beach)\\b"
+    ]},
+    { "name": "noise_blocking", "label": "Blocking out noise", "patterns": [
+      "\\bnoise[- ]cancel\\w*", "\\bblock\\w*\\b[^.]{0,10}\\b(noise|sound|engine)\\b", "\\b(noisy|engine hum|chatter|too loud)\\b"
+    ]},
+    { "name": "lightweight", "label": "Light and compact", "patterns": [
+      "\\b(light ?weight|light enough|lighter|thin|compact|slim|palm-sized|small)\\b", "\\bweigh(s|ing)?\\b"
+    ]},
+    { "name": "gaming", "label": "Gaming", "patterns": [
+      "\\b(gam(e|es|ing|er|ers)|consoles?|playstation|xbox|rtx)\\b", "\\b1(20|44|65)hz\\b"
+    ]},
+    { "name": "work_study", "label": "Work and study", "patterns": [
+      "\\b(home office|office|spreadsheets?|typing|professionals?|productivity|working days?|studying|homework|note taking|essays?)\\b"
+    ]},
+    { "name": "fitness", "label": "Fitness and health", "patterns": [
+      "\\b(fitness|workouts?|gym|jogging|runners?|exercis\\w*|heart rate|sleep tracking|sleep analysis|swim\\w*|blood oxygen|steps)\\b"
+    ]},
+    { "name": "home_security", "label": "Home security cameras", "patterns": [
+      "\\b(security cameras?|cameras?|doorbells?|cctv|intruders?|burglar\\w*|person detection|night vision|driveway)\\b"
+    ]},
+    { "name": "privacy", "label": "Privacy", "patterns": [
+      "\\b(privacy|private|encrypt\\w*|my data|footage|recordings?|spying)\\b"
+    ]},
+    { "name": "cleaning", "label": "Cleaning", "patterns": [
+      "\\b(vacuum\\w*|hoover\\w*|cleaning|pet hair|mop\\w*|suction)\\b"
+    ]},
+    { "name": "air_quality", "label": "Air quality and allergies", "patterns": [
+      "\\b(allerg\\w*|pollen|air quality|air purif\\w*|smoke|hepa|asthma|dust)\\b"
+    ]},
+    { "name": "heating_energy", "label": "Heating and energy bills", "patterns": [
+      "\\b(heating|thermostat|boiler|heat pump|radiators?)\\b", "\\benergy (bills?|saving|costs?)\\b", "\\b(cold|freezing) (house|home|room)\\b"
+    ]},
+    { "name": "recycling_tradein", "label": "Recycling and trade-in", "patterns": [
+      "\\b(recycl\\w*|e-waste|dispose|get rid of|trade[- ]in|trading in)\\b",
+      "\\bold (phone|laptop|tv|device|electronics|tablet)s?\\b"
+    ]},
+    { "name": "gifts", "label": "Gifts", "patterns": [ "\\b(gift\\w*|presents?|birthday|vouchers?)\\b" ]},
+    { "name": "contact_support", "label": "Contacting support", "patterns": [
+      "\\b(contact (you|us|support)|customer (service|support)|live chat|phone number|(speak|talk) to (someone|a person|support|an agent|a human|customer service)|opening hours|support team|real person)\\b",
+      "\\bcontacting customer support\\b"
+    ]},
+    { "name": "error_code", "label": "Error code", "patterns": [ "\\berror\\b", "\\b[a-z]-?\\d{3}\\b" ]},
+    { "name": "installation", "label": "Installation and setup", "patterns": [
+      "\\b(install\\w*|set ?up|setting up|mount\\w*|brackets?|vesa|on the wall|hang (it|the tv))\\b"
+    ]},
+    { "name": "tv_film", "label": "TV and films", "patterns": [
+      "\\b(tvs?|televisions?|films?|movies?|cinema|netflix|streaming|dialogue|hdr|4k|oled|qled)\\b"
+    ]},
+    { "name": "music_audio", "label": "Music and sound", "patterns": [
+      "\\b(music|songs?|audio|speakers?|bass|surround|dolby atmos|soundbar|headphones?|earbuds?|listen\\w*)\\b"
+    ]},
+    { "name": "phones_tablets", "label": "Phones and tablets", "patterns": [
+      "\\b(phones?|smartphones?|mobile|tablets?|ipad|android)\\b"
+    ]},
+    { "name": "computers", "label": "Computers", "patterns": [
+      "\\b(laptops?|computers?|pc|desktop|notebook|ultrabook|monitors?|keyboards?|mouse)\\b"
+    ]},
+    { "name": "budget", "label": "Affordable", "patterns": [
+      "\\b(cheap\\w*|budget|affordable|inexpensive|low[- ]cost|not too expensive)\\b", "\\bunder \\$?\\d+\\b"
+    ]},
+    { "name": "comfort", "label": "Comfort and ergonomics", "patterns": [
+      "\\b(ergonomic\\w*|wrist|strain|pain|comfort\\w*|posture)\\b"
+    ]}
+    ,
+    // ---------------------------------------------------------------- ERP consultancy
+    { "name": "erp_finance", "label": "Finance and accounting", "patterns": [
+      "\\b(general ledger|ledgers?|journals?|journal entr\\w*|accounts? (payable|receivable)|chart of accounts|accruals?|depreciation|fixed assets?|balance sheet|fiscal)\\b",
+      "\\b(month|year)[- ]end\\b", "\\bclos(e|ing) the (month|year|books)\\b", "\\b(bank )?reconcil\\w*", "\\baudit\\w*"
+    ]},
+    { "name": "erp_tax", "label": "Tax and VAT", "patterns": [ "\\b(tax\\w*|vat|gst|withholding)\\b" ]},
+    { "name": "erp_invoicing", "label": "Invoices and billing", "patterns": [
+      "\\binvoic\\w*", "\\bcredit notes?\\b", "\\b(customer|client)s? (are )?waiting for (their|the) bills?\\b"
+    ]},
+    { "name": "erp_inventory", "label": "Inventory and stock", "patterns": [
+      "\\b(inventory|stock\\w*|warehouses?|bin locations?|cycle count\\w*|stock ?takes?|stock count\\w*|reorder\\w*|batch\\w*|expiry|serial numbers?|goods receipt|picking|stock transfers?)\\b"
+    ]},
+    { "name": "erp_purchasing", "label": "Purchasing and suppliers", "patterns": [
+      "\\b(purchas\\w*|procurement|suppliers?|vendors?|purchase orders?)\\b"
+    ]},
+    { "name": "erp_sales", "label": "Sales and CRM", "patterns": [
+      "\\b(sales orders?|quotations?|crm|leads?|pipeline|opportunit\\w*|loyalty|customers? portal|enquir\\w*)\\b"
+    ]},
+    { "name": "erp_payroll", "label": "HR and payroll", "patterns": [
+      "\\b(payroll|payslips?|salar\\w*|wages?|overtime|allowances?|epf|etf|leave (rules|policies|balance)|annual leave|attendance|employees?|hr)\\b"
+    ]},
+    { "name": "erp_manufacturing", "label": "Manufacturing and production", "patterns": [
+      "\\b(manufactur\\w*|production|bills? of materials?|boms?|work orders?|routings?|mrp|material requirements|shop floor|made[- ]to[- ]order|cutting list)\\b"
+    ]},
+    { "name": "erp_reporting", "label": "Reports and dashboards", "patterns": [
+      "\\b(reports?|reporting|dashboards?|kpis?|analytics|saved searches|power bi)\\b"
+    ]},
+    { "name": "erp_integration", "label": "Integration and syncing", "patterns": [
+      "\\b(integrat\\w*|api|apis|sync\\w*|webhooks?|shopify|woocommerce|e-?commerce|edi|cad system|tracking api|connect(ed|ing)? (to|with) )\\b",
+      "\\b(orders?|data) (stopped|not) (appearing|coming|syncing)\\b"
+    ]},
+    { "name": "erp_migration", "label": "Data migration", "patterns": [
+      "\\b(migrat\\w*|data import|import(ed|ing)? (the )?data|legacy (system|data|package)|opening balances|cleans\\w*|cut-?over|spreadsheets?|old (accounting|system|package))\\b"
+    ]},
+    { "name": "erp_training", "label": "Training", "patterns": [
+      "\\b(train\\w*|workshops?|onboard\\w*|user guides?|reference guides?|how to use|knowledge transfer|teach\\w*|learn\\w*)\\b"
+    ]},
+    { "name": "erp_performance", "label": "Slow or freezing system", "patterns": [
+      "\\b(slow\\w*|performance|freez\\w*|lag\\w*|time ?outs?|hangs?|hanging|takes? (ages|forever|minutes|almost a minute)|too long)\\b"
+    ]},
+    { "name": "erp_upgrade", "label": "Upgrades", "patterns": [
+      "\\b(upgrad\\w*|new version|latest version|end of support|patch\\w*)\\b"
+    ]},
+    { "name": "erp_go_live", "label": "Go-live", "patterns": [ "\\b(go-?live|going live|launch\\w*|parallel run|hypercare)\\b" ]},
+    { "name": "erp_errors", "label": "Errors and failures", "patterns": [
+      "\\b(errors?|bugs?|crash\\w*|fail(s|ed|ing|ure)?|stuck|cannot be (validated|posted)|won'?t post|not posting|wrong|incorrect|do(es)? not match|mismatch\\w*)\\b"
+    ]},
+    { "name": "erp_customisation", "label": "Customisation", "patterns": [
+      "\\b(customi[sz]\\w*|custom (fields?|reports?|forms?|workflows?|templates?)|templates?|configurator|workflows?|approvals?)\\b"
+    ]},
+    { "name": "erp_delay", "label": "Delays and missed deadlines", "patterns": [
+      "\\b(late|delay\\w*|behind schedule|overdue|missed (the )?deadline|weeks? late|running late|took longer than planned|took longer)\\b"
+    ]},
+    { "name": "erp_urgent", "label": "Urgent", "patterns": [
+      "\\b(urgent\\w*|asap|as soon as possible|critical|emergency|immediately|blocking|due next week|customers are waiting)\\b"
+    ]},
+    { "name": "client_unhappy", "label": "Unhappy client", "patterns": [
+      "\\b(unhappy|disappoint\\w*|frustrat\\w*|dissatisf\\w*|not (happy|satisfied|impressed|pleased)|poor|terrible|complain\\w*|angry|let down|chase\\w*|slow to respond|response was slow|updates are rare)\\b",
+      "\\b(would not|wouldn'?t|won'?t|not) recommend\\b", "\\bbad (service|experience)\\b", "\\bextra cost\\b"
+    ]},
+    { "name": "client_happy", "label": "Happy client", "patterns": [
+      "\\b(excellent|fantastic|great|loved|delighted|impress\\w*|very helpful|professional|patient|knowledgeable|smooth\\w*|exactly what|confident now|thank\\w*)\\b",
+      "(?<!not |n't )\\brecommend\\w*\\b", "\\b(happy|satisfied) (client|customer)s?\\b"
+    ]},
+    { "name": "follow_up", "label": "Follow-up needed", "patterns": [
+      "\\bfollow[- ]?ups?\\b", "\\b(next steps?|action items?|still needs?|needs a small change|review (in|again))\\b"
+    ]},
+    { "name": "money_owed", "label": "Payments and money owed", "patterns": [
+      "\\b(unpaid|outstanding|overdue payments?|paid late|reminders?|disput\\w*|payment on hold|not (yet )?paid|owe\\w*)\\b"
+    ]}
+  ],
+
+  "synonyms": {
+    "parcel":    [ "parcel", "package", "shipment", "delivery" ],
+    "tv":        [ "tv", "television", "telly" ],
+    "laptop":    [ "laptop", "notebook", "ultrabook" ],
+    "phone":     [ "phone", "smartphone", "mobile", "cellphone" ],
+    "headphone": [ "headphone", "headset", "earphone" ],
+    "earbud":    [ "earbud", "earpiece" ],
+    "broken":    [ "broken", "faulty", "defective", "damaged" ],
+    "repair":    [ "repair", "fix", "mend" ],
+    "cheap":     [ "cheap", "affordable", "inexpensive", "budget" ],
+    "wifi":      [ "wifi", "wi-fi" ],
+    "password":  [ "password", "passcode" ],
+    "child":     [ "child", "children", "kid" ],
+    "price":     [ "price", "cost", "fee" ],
+    "fast":      [ "fast", "quick", "rapid" ],
+    "large":     [ "large", "big", "huge" ],
+    "small":     [ "small", "compact", "mini", "tiny" ],
+    "vacuum":    [ "vacuum", "hoover" ],
+    "tablet":    [ "tablet", "ipad" ],
+    "email":     [ "email", "e-mail" ],
+    "buy":       [ "buy", "purchase" ],
+    "arrive":    [ "arrive", "come", "came" ],
+    "supplier":  [ "supplier", "vendor" ],
+    "employee":  [ "employee", "staff", "worker" ],
+    "client":    [ "client", "customer" ],
+    "invoice":   [ "invoice", "bill" ],
+    "consultation": [ "consultation", "session", "booking" ],
+    "consultant": [ "consultant", "advisor", "adviser" ]
+  },
+
+  "stopWords": [
+    "a","an","and","are","as","at","be","been","but","by","can","could","do","does","did","for","from","get","got",
+    "how","i","i'm","if","in","into","is","it","it's","its","me","my","of","on","or","our","so","that","the","their",
+    "them","there","this","to","too","up","us","was","we","what","when","where","which","who","why","will","with",
+    "would","you","your","yet","has","have","had","just","any","some","also","than","then","very","all","one","need",
+    "want","should","while","really","keeps","there's","about","after","before","out","off","over","under","more","most","only","own","same"
+  ],
+
+  // Applied in order to every word. "$1" means "keep the first ( ) group".
+  "stemming": [
+    { "pattern": "^(\\w{3,})ies$", "replace": "$1y" },
+    { "pattern": "^(\\w{3,}?)(ing|ed|ly)$", "replace": "$1" },
+    { "pattern": "^(\\w{2,}[^s])s$", "replace": "$1" },
+    { "pattern": "^(\\w{3,})e$", "replace": "$1" },
+    { "pattern": "^(\\w{2,}?)([bdfglmnprt])\\2$", "replace": "$1$2" }
+  ]
+}

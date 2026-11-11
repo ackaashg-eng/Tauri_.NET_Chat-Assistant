@@ -1,0 +1,21 @@
+:root { --bg:#ffffff; --soft:#f2fafd; --navy:#03045e; --blue:#0077b6; --blue-hover:#005f92; --cyan:#00b4d8; --line:#b9d5e3; --muted:#3f4b7c; --bad:#c4283a; }
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: "Segoe UI", system-ui, sans-serif; color: var(--navy);
+  background: radial-gradient(1000px 520px at 15% -10%, #caf0f8 0%, transparent 60%), var(--bg);
+  display: grid; place-items: center; padding: 16px;
+}
+.card { width: 100%; max-width: 440px; background: #fff; border: 1px solid #dcebf2; border-radius: 16px; padding: 32px 28px; box-shadow: 0 18px 50px rgba(3, 4, 94, 0.1); }
+.logo { height: 56px; display: block; margin-bottom: 20px; }
+h1 { font-size: 20px; margin: 0 0 8px; }
+.hint { color: var(--muted); font-size: 14px; margin: 0 0 20px; line-height: 1.5; }
+code { color: var(--blue); }
+label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+input { width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--line); background: #fff; color: var(--navy); font-size: 15px; }
+input:focus { outline: 3px solid rgba(0, 180, 216, 0.35); border-color: var(--cyan); }
+button { margin-top: 14px; width: 100%; padding: 11px; border: 0; border-radius: 10px; background: var(--blue); color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; }
+button:hover { background: var(--blue-hover); } button:disabled { opacity: .6; cursor: wait; }
+.msg { min-height: 20px; font-size: 14px; margin: 14px 0 0; }
+.msg.bad { color: var(--bad); } .msg.ok { color: var(--blue); }
+.foot { color: var(--muted); font-size: 12px; margin: 18px 0 0; }

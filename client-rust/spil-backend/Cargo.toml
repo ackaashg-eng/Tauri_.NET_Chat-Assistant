@@ -1,0 +1,36 @@
+[package]
+name = "spil-backend"
+description = "SPIL Labs web backend: logins, chat rules and tool runner, calling the C# MCP server over STDIO"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+name = "spil_backend"
+path = "src/lib.rs"
+
+[[bin]]
+name = "spil-backend"
+path = "src/main.rs"
+
+[dependencies]
+mcp-client = { path = "../mcp-client" }
+async-trait = "0.1.92"
+axum = { version = "0.8.9", features = ["macros"] }
+bcrypt = "0.19.3"
+chrono = "0.4.45"
+jsonwebtoken = { version = "11.1.0", default-features = false, features = ["rust_crypto"] }
+regex = "1.13.1"
+rusqlite = { version = "0.41.1", features = ["bundled"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true, features = ["full"] }
+tower-http = { version = "0.7.1", features = ["fs", "cors", "set-header", "trace"] }
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+
+[dev-dependencies]
+http-body-util = "0.1.5"
+tower = { version = "0.5.3", features = ["util"] }
+tempfile = "3"

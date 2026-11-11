@@ -1,0 +1,17 @@
+# build output
+dist/
+client-rust/target/
+server-dotnet/**/bin/
+server-dotnet/**/obj/
+frontend/node_modules/
+frontend/dist/
+desktop/node_modules/
+desktop/src-tauri/target/
+desktop/src-tauri/gen/
+# settings with secrets, and the account database
+config/server.env
+data/
+*.db
+*.db-wal
+*.db-shm
+*.tsbuildinfo
